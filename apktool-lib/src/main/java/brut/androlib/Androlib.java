@@ -21,8 +21,6 @@ import brut.androlib.res.AndrolibResources;
 import brut.androlib.res.data.ResPackage;
 import brut.androlib.res.data.ResTable;
 import brut.androlib.res.util.ExtFile;
-import brut.androlib.src.SmaliBuilder;
-import brut.androlib.src.SmaliDecoder;
 import brut.common.BrutException;
 import brut.directory.*;
 import brut.util.BrutIO;
@@ -31,8 +29,6 @@ import java.io.*;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
-import org.yaml.snakeyaml.DumperOptions;
-import org.yaml.snakeyaml.Yaml;
 
 /**
  * @author Ryszard Wiśniewski <brut.alll@gmail.com>
@@ -62,18 +58,18 @@ public class Androlib {
         }
     }
 
-    public void decodeSourcesSmali(File apkFile, File outDir, boolean debug)
-            throws AndrolibException {
-        try {
-            File smaliDir = new File(outDir, SMALI_DIRNAME);
-            OS.rmdir(smaliDir);
-            smaliDir.mkdirs();
-            LOGGER.info("Baksmaling...");
-            SmaliDecoder.decode(apkFile, smaliDir, debug);
-        } catch (BrutException ex) {
-            throw new AndrolibException(ex);
-        }
-    }
+//    public void decodeSourcesSmali(File apkFile, File outDir, boolean debug)
+//            throws AndrolibException {
+//        try {
+//            File smaliDir = new File(outDir, SMALI_DIRNAME);
+//            OS.rmdir(smaliDir);
+//            smaliDir.mkdirs();
+//            LOGGER.info("Baksmaling...");
+//            SmaliDecoder.decode(apkFile, smaliDir, debug);
+//        } catch (BrutException ex) {
+//            throw new AndrolibException(ex);
+//        }
+//    }
 
     public void decodeSourcesJava(ExtFile apkFile, File outDir, boolean debug)
             throws AndrolibException {
@@ -131,42 +127,13 @@ public class Androlib {
 
     public void writeMetaFile(File mOutDir, Map<String, Object> meta)
             throws AndrolibException {
-        DumperOptions options = new DumperOptions();
-        options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
-//        options.setIndent(4);
-        Yaml yaml = new Yaml(options);
-
-        FileWriter writer = null;
-        try {
-            writer = new FileWriter(new File(mOutDir, "apktool.yml"));
-            yaml.dump(meta, writer);
-        } catch (IOException ex) {
-            throw new AndrolibException(ex);
-        } finally {
-            if (writer != null) {
-                try {
-                    writer.close();
-                } catch (IOException ex) {}
-            }
-        }
+ 
     }
 
     public Map<String, Object> readMetaFile(ExtFile appDir)
             throws AndrolibException {
-        InputStream in = null;
-        try {
-             in = appDir.getDirectory().getFileInput("apktool.yml");
-             Yaml yaml = new Yaml();
-             return (Map<String, Object>) yaml.load(in);
-        } catch (DirectoryException ex) {
-            throw new AndrolibException(ex);
-        } finally {
-            if (in != null) {
-                try {
-                    in.close();
-                } catch (IOException ex) {}
-            }
-        }
+
+    	return null;
     }
 
     public void build(File appDir, File outFile, boolean forceBuildAll,
@@ -236,11 +203,7 @@ public class Androlib {
         if (! forceBuildAll) {
             LOGGER.info("Checking whether sources has changed...");
         }
-        if (forceBuildAll || isModified(smaliDir, dex)) {
-            LOGGER.info("Smaling...");
-            dex.delete();
-            SmaliBuilder.build(smaliDir, dex, debug);
-        }
+
         return true;
     }
 
@@ -455,13 +418,7 @@ public class Androlib {
         return false;
     }
 
-    public static String getVersion() {
-        String version = ApktoolProperties.get("version");
-        return version.endsWith("-SNAPSHOT") ?
-                version.substring(0, version.length() - 9) + '.' +
-                    ApktoolProperties.get("git.commit.id.abbrev")
-                : version;
-    }
+
 
     private File[] parseUsesFramework(Map<String, Object> usesFramework)
             throws AndrolibException {

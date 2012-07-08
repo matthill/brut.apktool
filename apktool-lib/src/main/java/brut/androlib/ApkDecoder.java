@@ -81,9 +81,6 @@ public class ApkDecoder {
                 case DECODE_SOURCES_NONE:
                     mAndrolib.decodeSourcesRaw(mApkFile, outDir, mDebug);
                     break;
-                case DECODE_SOURCES_SMALI:
-                    mAndrolib.decodeSourcesSmali(mApkFile, outDir, mDebug);
-                    break;
                 case DECODE_SOURCES_JAVA:
                     mAndrolib.decodeSourcesJava(mApkFile, outDir, mDebug);
                     break;
@@ -210,7 +207,6 @@ public class ApkDecoder {
 
     private void writeMetaFile() throws AndrolibException {
         Map<String, Object> meta = new LinkedHashMap<String, Object>();
-        meta.put("version", Androlib.getVersion());
         meta.put("apkFileName", mApkFile.getName());
 
         if (mDecodeResources != DECODE_RESOURCES_NONE && (hasManifest() || hasResources())) {
